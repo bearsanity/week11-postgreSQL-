@@ -1,3 +1,5 @@
+TRUNCATE products, suppliers RESTART IDENTITY;
+
 INSERT INTO suppliers (name, email, phone)
 VALUES
   ('Acme Wholesale', 'contact@acme.com', '555-1234'),
