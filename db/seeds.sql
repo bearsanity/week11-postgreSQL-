@@ -1,4 +1,4 @@
-TRUNCATE products, suppliers RESTART IDENTITY;
+TRUNCATE products, suppliers RESTART IDENTITY; --This keeps the ids at 1,2,3,4 if I delete and readd them to the tables
 
 INSERT INTO suppliers (name, email, phone)
 VALUES
