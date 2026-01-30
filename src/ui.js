@@ -47,5 +47,20 @@ async function mainMenu() {
     }
   };
 
+//     const questions =   [{
+//     type: 'input',
+//     name: 'name',
+//     message: "What is the supplier's name?"
+//   },
+//   {
+//     type: 'input',
+//     name: 'email',
+//     message: "What is the supplier's email?"
+//   },
+//   {
+//     type: 'input',
+//     name: 'phone',
+//     message: "What is the supplier's phone number?"
+//   }];
 
 mainMenu();  // start the app
