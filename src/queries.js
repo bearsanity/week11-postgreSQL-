@@ -39,7 +39,8 @@ exports.addSupplier = async function (name, email, phone) {
     try {
         const res = await pool.query(
             `INSERT INTO suppliers (name, email, phone)
-            VALUES ($1, $2, $3) RETURNING *`);
+            VALUES ($1, $2, $3) RETURNING *`,
+            [name, email, phone]);
         return res.rows[0];
     } catch(err) {
         console.log(err);

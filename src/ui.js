@@ -41,26 +41,20 @@ async function mainMenu() {
             await mainMenu();
             break;
 
+        case 'Add a supplier':
+            const supplierAnswers = await inquirer.prompt([
+                { type: 'input', name: 'name', message: "Supplier name?" },
+                { type: 'input', name: 'email', message: "Supplier email?" },
+                { type: 'input', name: 'phone', message: "Supplier phone?" }
+            ]);
+            await queries.addSupplier(supplierAnswers.name, supplierAnswers.email, supplierAnswers.phone);
+            await mainMenu();
+            break;
+
         case 'Exit':
             pool.end();  // close the connection
             break;
     }
   };
-
-//     const questions =   [{
-//     type: 'input',
-//     name: 'name',
-//     message: "What is the supplier's name?"
-//   },
-//   {
-//     type: 'input',
-//     name: 'email',
-//     message: "What is the supplier's email?"
-//   },
-//   {
-//     type: 'input',
-//     name: 'phone',
-//     message: "What is the supplier's phone number?"
-//   }];
 
 mainMenu();  // start the app
