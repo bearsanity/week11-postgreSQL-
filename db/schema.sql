@@ -12,4 +12,5 @@ CREATE TABLE products (
   price DECIMAL(10,2) NOT NULL,
   quantity INTEGER NOT NULL DEFAULT 0,
   supplier_id INTEGER REFERENCES suppliers(id) ON DELETE SET NULL
+  active BOOLEAN DEFAULT true
 );

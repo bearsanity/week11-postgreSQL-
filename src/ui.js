@@ -74,7 +74,10 @@ async function mainMenu() {
         }
         case 'Restock a product (increase quantity)': {
             const products = await queries.viewAllProducts();
-            const productChoices = products.map(s => ({
+            
+            const productChoices = products
+            .sort((a, b) => a.name.localeCompare(b.name))
+            .map(s => ({
                 name: s.name,
                 value: s.id
             }));
@@ -83,16 +86,104 @@ async function mainMenu() {
                 { type: 'input', name: 'quantity', message: 'How many would you like to add?'}
             ]);
            
-            await queries.restockProduct(quantityAnswers.productId, quantityAnswers.quantity);
+            const result = await queries.restockProduct(quantityAnswers.productId, quantityAnswers.quantity);
+            if (result) {
+                console.log('Succesfully updated.')
+            } else {
+                console.log('Update failed. Try again')
+            }
+            await mainMenu();
+            break;
+        }
+
+        case 'Record a sale (decrease quantity)': {
+            const products = await queries.viewAllProducts();
+            const productChoices = products.map(s => ({
+                name: s.name,
+                value: s.id
+            }));
+            const quantityAnswers = await inquirer.prompt([
+                { type: 'list', name: 'productId', message: 'Which product?', choices: productChoices },
+                { type: 'input', name: 'quantity', message: 'How many would you like to remove?'}
+            ]);
+           
+            const result = await queries.recordSale(quantityAnswers.productId, quantityAnswers.quantity);
+            if (result) {
+                console.log('Succesfully updated.')
+            } else {
+                console.log('Update failed. Inventory too low.')
+            }
+            await mainMenu();
+            break;
+        }
+
+        case 'Update a product (price, supplier, category)': {
+            const products = await queries.viewAllProducts();
+            const productChoices = products
+                .sort((a, b) => a.name.localeCompare(b.name))
+                .map(p => ({
+                    name: p.name,
+                    value: p.id
+                }));
+
+            const { productId } = await inquirer.prompt([
+                { type: 'list', name: 'productId', message: 'Which product?', choices: productChoices }
+            ]);
+
+            const currentProduct = products.find(p => p.id === productId);
+
+            const suppliers = await queries.viewAllSuppliers();
+            const supplierChoices = suppliers
+                .sort((a, b) => a.name.localeCompare(b.name))
+                .map(s => ({
+                    name: s.name,
+                    value: s.id
+                }));
+
+            const updates = await inquirer.prompt([
+                { type: 'input', name: 'price', message: 'New price?', default: currentProduct.price },
+                { type: 'input', name: 'category', message: 'New category?', default: currentProduct.category },
+                { type: 'list', name: 'supplier_id', message: 'New supplier?', choices: supplierChoices, default: currentProduct.supplier_id }
+            ]);
+
+            const updated = await queries.updateProduct(productId, updates.price, updates.category, updates.supplier_id);
+            console.log('Updated:', updated);
+            await mainMenu();
+            break;
+        }
+
+        case 'Delete a product': {
+            const products = await queries.viewAllProducts();
+            const productChoices = products
+                .sort((a, b) => a.name.localeCompare(b.name))
+                .map(p => ({
+                    name: p.name,
+                    value: p.id
+                }));
+
+            const { productId } = await inquirer.prompt([
+                { type: 'list', name: 'productId', message: 'Which product do you want to delete?', choices: productChoices }
+            ]);
+
+            const { confirm } = await inquirer.prompt([
+                { type: 'confirm', name: 'confirm', message: 'Are you sure?', default: false }
+            ]);
+
+            if (confirm) {
+                const deleted = await queries.deleteProduct(productId);
+                console.log('Deleted:', deleted);
+            } else {
+                console.log('Cancelled.');
+            }
             await mainMenu();
             break;
         }
 
         case 'Exit': {
-            pool.end();  // close the connection
-            break;
+            console.log('Goodbye!');
+            process.exit();
         }
     }
-  };
+};
 
 module.exports = { mainMenu };
